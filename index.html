@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Contacts Demo</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        #contacts { margin-top: 20px; }
+        .contact { padding: 5px; border-bottom: 1px solid #ccc; }
+        button { margin: 5px; }
+    </style>
+</head>
+<body>
+    <h2>Contact Manager</h2>
+
+    <!-- Add Contact Form -->
+    <div>
+        <input type="text" id="name" placeholder="Name" />
+        <input type="text" id="phone" placeholder="Phone" />
+        <button id="addBtn">Add Contact</button>
+        <button id="getBtn">Get All Contacts</button>
+    </div>
+
+    <!-- Display Contacts -->
+    <div id="contacts"></div>
+
+    <script>
+        const baseUrl = "https://kannanwebapjava2026.azurewebsites.net/api/v1/contacts";
+
+        // Add Contact
+        $("#addBtn").on("click", function() {
+            const contact = {
+                name: $("#name").val(),
+                phone: $("#phone").val()
+            };
+
+            $.ajax({
+                url: baseUrl,
+                method: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(contact),
+                success: function() {
+                    alert("Contact added successfully!");
+                    $("#name").val("");
+                    $("#phone").val("");
+                },
+                error: function() {
+                    alert("Error adding contact.");
+                }
+            });
+        });
+
+        // Get All Contacts
+        $("#getBtn").on("click", function() {
+            $.ajax({
+                url: baseUrl,
+                method: "GET",
+                success: function(data) {
+                    $("#contacts").empty();
+                    if (data.length === 0) {
+                        $("#contacts").append("<p>No contacts found.</p>");
+                    } else {
+                        data.forEach(function(c) {
+                            $("#contacts").append(
+                                `<div class="contact"><strong>${c.name}</strong> - ${c.phone}</div>`
+                            );
+                        });
+                    }
+                },
+                error: function() {
+                    alert("Error fetching contacts.");
+                }
+            });
+        });
+    </script>
+</body>
+</html>
